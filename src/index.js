@@ -1,78 +1,61 @@
 
-const json = (data, status = 200) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json"
-    }
-  });
-
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-
-    if (url.pathname === "/api/health") {
-      return json({
-        ok: true,
-        name: "SCANTY AI HUB",
-        runtime: "Cloudflare Workers",
-        aiConfigured: Boolean(env.GEMINI_API_KEY)
-      });
-    }
-
-    if (url.pathname === "/api/chat" && request.method === "POST") {
-      let body;
-
       try {
-        body = await request.json();
-      } catch {
-        return json({ error: "Invalid JSON request." }, 400);
-      }
+        const primaryModel = env.GEMINI_MODEL || "gemini-3.8-flash";
+        const fallbackModel = "gemini-3.5-flash-lite";
 
-      const message = String(body?.message || "").trim();
+        async function askGemini(model) {
+          const endpoint =
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
-      if (!message) {
-        return json({ error: "Message is required." }, 400);
-      }
-
-      if (!env.GEMINI_API_KEY) {
-        return json({
-          error: "Gemini API key is not configured."
-        }, 503);
-      }
-
-      try {
-        const model = env.GEMINI_MODEL || "gemini-2.5-flash";
-
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": env.GEMINI_API_KEY
-            },
-            body: JSON.stringify({
-              contents: [
-                {
+          for (let attempt = 0; attempt < 3; attempt++) {
+            const response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": env.GEMINI_API_KEY
+              },
+              body: JSON.stringify({
+                contents: [{
                   role: "user",
                   parts: [{ text: message }]
+                }],
+                generationConfig: {
+                  maxOutputTokens: 2048
                 }
-              ],
-              generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 2048
-              }
-            })
+              })
+            });
+
+            if (response.ok) {
+              return await response.json();
+            }
+
+            if (response.status !== 503) {
+              const error = await response.json();
+              throw new Error(
+                error?.error?.message || "Gemini API request failed."
+              );
+            }
+
+            if (attempt < 2) {
+              await new Promise(resolve =>
+                setTimeout(resolve, 1000 * (2 ** attempt))
+              );
+            }
           }
-        );
 
-        const result = await response.json();
+          return null;
+        }
 
-        if (!response.ok) {
+        let result = await askGemini(primaryModel);
+
+        if (!result) {
+          result = await askGemini(fallbackModel);
+        }
+
+        if (!result) {
           return json({
-            error: result?.error?.message || "Gemini request failed."
-          }, 502);
+            error: "Our AI services are busy. Please try again shortly."
+          }, 503);
         }
 
         const reply = result?.candidates?.[0]?.content?.parts
@@ -81,22 +64,15 @@ export default {
           .trim();
 
         if (!reply) {
-          return json({ error: "No AI response received." }, 502);
+          return json({
+            error: "The AI did not return a response. Please try again."
+          }, 502);
         }
 
         return json({ reply });
 
       } catch (error) {
         return json({
-          error: "Unable to connect to Gemini."
+          error: error.message || "Unable to connect to Gemini."
         }, 502);
       }
-    }
-
-    if (url.pathname.startsWith("/api/")) {
-      return json({ error: "API route not found." }, 404);
-    }
-
-    return env.ASSETS.fetch(request);
-  }
-};
