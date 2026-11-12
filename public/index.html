@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090909">
+  <meta name="description" content="SCANTY AI HUB — one futuristic home for AI tools.">
+  <title>SCANTY AI HUB</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="logo">S</span><span>SCANTY <b>AI HUB</b></span></a>
+    <nav>
+      <a href="#chat">AI Chat</a>
+      <a href="#tools">Tools</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">✦ THE FUTURE OF EVERYDAY AI</div>
+      <h1>SCANTY <span>AI HUB</span></h1>
+      <p>One futuristic workspace for chat, creativity, coding, documents and more.</p>
+      <div class="hero-actions">
+        <a class="primary" href="#chat">Start with AI <span>→</span></a>
+        <a class="secondary" href="#tools">Explore tools</a>
+      </div>
+      <div class="status"><i></i> AI HUB ONLINE</div>
+    </section>
+
+    <section id="chat" class="chat-section">
+      <div class="section-label">01 / AI CORE</div>
+      <div class="chat-card">
+        <div class="chat-head">
+          <div><strong>SCANTY AI</strong><small>Universal AI assistant</small></div>
+          <span class="live">● READY</span>
+        </div>
+        <div id="messages" class="messages">
+          <div class="message ai"><span class="avatar">S</span><div><p>Welcome to SCANTY AI HUB. Ask me anything.</p></div></div>
+        </div>
+        <form id="chat-form" class="composer">
+          <textarea id="prompt" rows="1" placeholder="Ask SCANTY AI anything..." required></textarea>
+          <button type="submit">Send <span>↗</span></button>
+        </form>
+        <div class="chips">
+          <button data-prompt="Explain this to me simply">Explain simply</button>
+          <button data-prompt="Help me write something professional">Write for me</button>
+          <button data-prompt="Help me debug my code">Debug code</button>
+          <button data-prompt="Give me creative ideas">Create ideas</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tools" class="tools">
+      <div class="section-label">02 / AI TOOLS</div>
+      <div class="tool-grid">
+        <article><div class="icon">✦</div><h3>AI Chat</h3><p>Ask questions, brainstorm, plan and learn.</p><span>ACTIVE</span></article>
+        <article><div class="icon">◈</div><h3>Image Studio</h3><p>Create and transform visual ideas with AI.</p><span>COMING NEXT</span></article>
+        <article><div class="icon">⌘</div><h3>Code Lab</h3><p>Generate, explain and debug your code.</p><span>COMING NEXT</span></article>
+        <article><div class="icon">▣</div><h3>Document AI</h3><p>Summarize and work with your documents.</p><span>COMING NEXT</span></article>
+        <article><div class="icon">◉</div><h3>Voice AI</h3><p>Talk naturally with your AI workspace.</p><span>COMING NEXT</span></article>
+        <article><div class="icon">⌁</div><h3>Live Hub</h3><p>News, sports and live information in one place.</p><span>COMING NEXT</span></article>
+      </div>
+    </section>
+
+    <section id="about" class="about">
+      <div class="section-label">03 / THE HUB</div>
+      <h2>Built to become your<br><span>AI command center.</span></h2>
+      <p>SCANTY AI HUB is designed as a single, fast home for practical AI tools — with the core chat experience first and new capabilities added around it.</p>
+    </section>
+  </main>
+
+  <footer><span>SCANTY AI HUB</span><span>FREE AI WORKSPACE</span><span>© 2026</span></footer>
+  <script src="/app.js"></script>
+</body>
+</html>
